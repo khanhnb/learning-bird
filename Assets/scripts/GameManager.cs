@@ -5,61 +5,67 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 	public delegate void GameDelegate();
-	public static event GameDelegate OnGameStarted;
-	public static event GameDelegate OnGameOverConfirmed;
+    public static event GameDelegate OnReset;
+	//public static event GameDelegate OnGameStarted;
+	//public static event GameDelegate OnGameOverConfirmed;
 
 	public static GameManager Instance;
-	public GameObject startPage;
-	public GameObject gameOverPage;
-	public GameObject countdownPage;
 	public Text scoreText;
-
-	enum PageState
-	{
-		None,
-		Start,
-		GameOver,
-		Countdown
-	}
-	int score = 0;
-	bool gameOver = false;
-    public bool GameOver { get { return gameOver; } }
-
+    public GameObject Prefab;
+    public int NUM_BIRDS = 2;
+    List<GameObject> birdPool;
+    int deadBirds = 0;
 	void Awake(){
 		Instance = this;
-	}
+        birdPool = new List<GameObject>();
+        Debug.Log("Game manager Started");
+        for (int i = 0; i < NUM_BIRDS; i++)
+        {
+            var go = Instantiate(Prefab) as GameObject;
+            var bird = go.GetComponent<Bird>();
+            bird.OnDie += OnDie;
+            go.transform.position = Vector3.one * 10;
+            birdPool.Add(go);
+        }
+    }
 
-	void SetPageState(PageState state){
-		switch (state)
-		{
-			case PageState.None:
-				startPage.SetActive(false);
-				gameOverPage.SetActive(false);
-				countdownPage.SetActive(false);
-				break;
-			case PageState.Start:
-				startPage.SetActive(true);
-				gameOverPage.SetActive(false);
-				countdownPage.SetActive(false);
-			break;
-			case PageState.GameOver:
-				startPage.SetActive(false);
-				gameOverPage.SetActive(true);
-				countdownPage.SetActive(false);
-			break;
-			case PageState.Countdown:
-				startPage.SetActive(false);
-				gameOverPage.SetActive(false);
-				countdownPage.SetActive(true);
-			break;
-		}
-	}
+	void OnEnable()
+	{
 
-	public void StartGame(){
+    }
 
-	}
+	void OnDisable()
+	{
+        for (int i = 0; i < NUM_BIRDS; i++)
+        {
+            birdPool[i].GetComponent<Bird>().OnDie -= OnDie;
+        }
+    }
 
-	public void ConfirmGameOver(){
-	
-	}
+    void Start()
+    {
+
+    }
+
+    void Update()
+    {
+        if(Input.GetMouseButtonDown(0)){
+            birdPool[0].GetComponent<Bird>().Flap();
+        }
+    }
+
+    void OnDie()
+    {
+        // TODO: add args in events, 
+        // return bird to initialize position;
+        deadBirds++;
+        Debug.Log("Number of dead birds: " + deadBirds);
+        if (deadBirds == NUM_BIRDS) NewGeneration();
+    }
+
+    void NewGeneration()
+    {
+        deadBirds = 0;
+        // generate new generation
+    }
 }
