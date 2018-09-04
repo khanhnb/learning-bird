@@ -6,8 +6,10 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour {
 	public delegate void GameDelegate();
     public static event GameDelegate OnReset;
-	//public static event GameDelegate OnGameStarted;
-	//public static event GameDelegate OnGameOverConfirmed;
+
+    public static readonly Vector3 initPos = Vector3.one * 100;
+    readonly Vector3 startPos = new Vector3(-3.36F, -0.25F, 9.826611F);
+
 
 	public static GameManager Instance;
 	public Text scoreText;
@@ -18,13 +20,13 @@ public class GameManager : MonoBehaviour {
 	void Awake(){
 		Instance = this;
         birdPool = new List<GameObject>();
-        Debug.Log("Game manager Started");
         for (int i = 0; i < NUM_BIRDS; i++)
         {
             var go = Instantiate(Prefab) as GameObject;
             var bird = go.GetComponent<Bird>();
             bird.OnDie += OnDie;
-            go.transform.position = Vector3.one * 10;
+            bird.SetIndex(i);
+            go.transform.position = initPos;
             birdPool.Add(go);
         }
     }
@@ -44,7 +46,7 @@ public class GameManager : MonoBehaviour {
 
     void Start()
     {
-
+        StartGame();
     }
 
     void Update()
@@ -54,18 +56,26 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    void OnDie()
+    void OnDie(int index)
     {
-        // TODO: add args in events, 
-        // return bird to initialize position;
         deadBirds++;
+        birdPool[index].GetComponent<Bird>().transform.position = initPos;
         Debug.Log("Number of dead birds: " + deadBirds);
-        if (deadBirds == NUM_BIRDS) NewGeneration();
-    }
+        if (deadBirds == NUM_BIRDS)
+        {
+            OnReset();
+            StartGame();
+        }
 
-    void NewGeneration()
-    {
+    }
+    void StartGame(){
         deadBirds = 0;
-        // generate new generation
+        for (int i = 0; i < NUM_BIRDS; i++)
+        {
+            var bird = birdPool[i].GetComponent<Bird>();
+            bird.transform.position = startPos;
+            bird.isDead = false;
+            bird.SetSimulated(true);
+        }
     }
 }

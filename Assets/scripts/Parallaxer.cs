@@ -32,7 +32,6 @@ public class Parallaxer : MonoBehaviour {
     float spawnTimer;
     float targetAspect;
     PoolObject[] poolObjects;
-    GameManager game;
     public bool canReset = false;
 	private void Awake()
 	{
@@ -41,7 +40,7 @@ public class Parallaxer : MonoBehaviour {
 
 	private void Start()
 	{
-        game = GameManager.Instance;
+
 	}
 
 	private void OnEnable()

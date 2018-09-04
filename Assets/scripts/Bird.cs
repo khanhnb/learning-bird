@@ -4,20 +4,22 @@ using UnityEngine;
 
 public class Bird : MonoBehaviour {
 
-    public delegate void GameDelegate();
+    public delegate void GameDelegate(int index);
     public event GameDelegate OnDie;
 
     public float tapForce = 250;
     public float tiltSmooth = 2;
     public int score = 0;
     public bool isDead = false;
-    public Vector3 startPos;
+
+    int index;
+
     Rigidbody2D bird2D;
     Quaternion downRotation;
     Quaternion forwardRotation;
 
-
-    void Start () {
+    void Awake()
+    {
         bird2D = GetComponent<Rigidbody2D>();
         downRotation = Quaternion.Euler(0, 0, -90);
         forwardRotation = Quaternion.Euler(0, 0, 30);
@@ -25,7 +27,7 @@ public class Bird : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        transform.rotation = Quaternion.Lerp(transform.rotation, downRotation, tiltSmooth * Time.deltaTime);
+        if(!isDead) transform.rotation = Quaternion.Lerp(transform.rotation, downRotation, tiltSmooth * Time.deltaTime);
     }
 
     public void Flap(){
@@ -40,8 +42,10 @@ public class Bird : MonoBehaviour {
         if (col.gameObject.tag == "DeadZone")
         {
             bird2D.simulated = false;
+            bird2D.velocity = Vector2.zero;
+            bird2D.transform.position = GameManager.initPos;
             isDead = true;
-            OnDie();
+            OnDie(index);
             Debug.Log("DeadZone");
         }
         if (col.gameObject.tag == "ScoreZone")
@@ -53,5 +57,9 @@ public class Bird : MonoBehaviour {
 
     public void SetSimulated(bool a){
         bird2D.simulated = a;
+    }
+
+    public void SetIndex(int a){
+        index = a;
     }
 }
