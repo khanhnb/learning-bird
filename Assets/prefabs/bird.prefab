@@ -77,7 +77,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 1.98
+  m_Radius: 1.82
 --- !u!114 &114149323960223958
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -93,7 +93,7 @@ MonoBehaviour:
   tiltSmooth: 2
   score: 0
   isDead: 0
-  startPos: {x: 0, y: 0, z: 0}
+  fitness: 0.01
 --- !u!212 &212744383738312740
 SpriteRenderer:
   m_ObjectHideFlags: 1

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Parallaxer : MonoBehaviour {
 
-    class PoolObject {
+    public class PoolObject {
         public Transform transform;
         public bool inUse;
         public PoolObject(Transform t) { transform = t; }
@@ -31,12 +31,15 @@ public class Parallaxer : MonoBehaviour {
 
     float spawnTimer;
     float targetAspect;
+    Vector3 defaultPipePos;
     PoolObject[] poolObjects;
     public bool canReset = false;
 	private void Awake()
 	{
+        targetAspect = targetAspectRatio.x / targetAspectRatio.y;
+        defaultPipePos = new Vector3(defaultSpawnPos.x * Camera.main.aspect / targetAspect, 0, 0);
         Configure();
-	}
+    }
 
 	private void Start()
 	{
@@ -58,10 +61,10 @@ public class Parallaxer : MonoBehaviour {
             for (int i = 0; i < poolObjects.Length; i++)
             {
                 poolObjects[i].Dispose();
-                poolObjects[i].transform.position = Vector3.one * 1000;
+                poolObjects[i].transform.position = defaultPipePos;
             }
-            if (spawnImmediate) SpawnImmediate();
         }
+        //if (spawnImmediate) SpawnImmediate();
     }
 
     void Update()
@@ -75,16 +78,21 @@ public class Parallaxer : MonoBehaviour {
     }
 
     void Configure(){
-        targetAspect = targetAspectRatio.x / targetAspectRatio.y;
         poolObjects = new PoolObject[poolSize];
         for (int i = 0; i < poolObjects.Length; i++){
             GameObject go = Instantiate(Prefab) as GameObject;
             Transform t = go.transform;
+
             t.SetParent(transform);
-            t.position = Vector3.one * 1000;
+            if (poolSize > 3) t.position = defaultPipePos;
+            else t.position = Vector3.one * 1000;
             poolObjects[i] = new PoolObject(t);
         }
         if (spawnImmediate) SpawnImmediate();
+        if(poolSize > 3){
+            // copy poolObject aka pipes to GameManager
+            GameManager.pipes = poolObjects;
+        }
     }
 
     void Spawn(){
@@ -108,15 +116,19 @@ public class Parallaxer : MonoBehaviour {
 
     void Shift(){
         for (int i = 0; i < poolObjects.Length; i++){
-            poolObjects[i].transform.position += -Vector3.right * shiftSpeed * Time.deltaTime;
-            CheckDisposeObject(poolObjects[i]);
+            if (poolObjects[i].inUse)
+            {
+                poolObjects[i].transform.position += -Vector3.right * shiftSpeed * Time.deltaTime;
+                CheckDisposeObject(poolObjects[i]);
+            }
         }
     }
 
     void CheckDisposeObject(PoolObject poolObject){
         if(poolObject.transform.position.x < (-defaultSpawnPos.x * Camera.main.aspect)/targetAspect){
             poolObject.Dispose();
-            poolObject.transform.position = Vector3.one * 1000;
+            if (poolSize > 3) poolObject.transform.position = defaultPipePos;
+            else poolObject.transform.position = Vector3.one * 1000;
         }
         
     }
