@@ -36,19 +36,19 @@ Neuroevolution, or neuro-evolution, is a form of artificial intelligence that us
 
 * Inputs:
 
-* y position of a bird.
+    * y position of a bird.
 
-* y position of nearest top pipe.
+    * y position of nearest top pipe.
 
-* y position of nearest bottom pipe.
+    * y position of nearest bottom pipe.
 
-* x position of neaset pipe.
+    * x position of neaset pipe.
 
-* Velocity of a bird.
+    * Velocity of a bird.
 
 * Output:
 
-* `output > 0.5` then `bird.flap()`.
+    * `output > 0.5` then `bird.flap()`.
 
 ### Genetic Algorithm
 
