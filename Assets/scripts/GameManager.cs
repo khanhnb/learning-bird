@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour
     int highestScore = 0;
     int numWeights = INPUT_SIZE * HIDDEN_SIZE + (NUM_HIDDEN - 1) * HIDDEN_SIZE * HIDDEN_SIZE + HIDDEN_SIZE * OUTPUT_SIZE;
     double[] champion;
+    public static float timeScale = 2f;
     void Awake()
     {
         Instance = this;
@@ -71,6 +72,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        Time.timeScale = timeScale;
         var score = 0;
         foreach (var go in birdPool)
         {
